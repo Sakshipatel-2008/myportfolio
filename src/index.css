@@ -1,1 +1,41 @@
 @import "tailwindcss";
+
+@theme {
+  --font-type: "Special Elite", monospace;
+  --font-mono: "JetBrains Mono", monospace;
+  --color-bg: #050505;
+  --color-ink: #e8e6e1;
+  --color-muted: #8a8883;
+}
+
+html,
+body,
+#root {
+  background: var(--color-bg);
+  color: var(--color-ink);
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-mono);
+  overflow-x: hidden;
+}
+/* Paper mode: swap the colour tokens */
+[data-theme="paper"] {
+  --color-bg: #ecebe6;
+  --color-ink: #141414;
+  --color-muted: #6b6a66;
+}
+
+/* Paper mode: invert the black & white frames so the black background becomes paper */
+[data-theme="paper"] .hero-canvas {
+  filter: invert(1) contrast(1.08);
+  mix-blend-mode: multiply;
+}
+
+/* Let our own circle animation do the theme transition */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
