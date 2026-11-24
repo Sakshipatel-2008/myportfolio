@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { useTheme } from "../../hooks/useTheme";
 
-const LENGTH = 170; // resting length of the thread
+const LENGTH = 100; // resting length of the thread
 const MAX_PULL = 90; // how far it can be dragged
 const THRESHOLD = 50; // pull beyond this to switch the theme
 

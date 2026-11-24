@@ -39,3 +39,34 @@ body {
   animation: none;
   mix-blend-mode: normal;
 }
+/* Typed text: letters stay invisible until "typed" */
+.t-char {
+  color: transparent;
+  position: relative;
+}
+.t-char.typed {
+  color: inherit;
+}
+
+/* The blinking caret ( | ) */
+.t-caret::after,
+.t-caret-before::before {
+  content: "";
+  position: absolute;
+  top: 0.1em;
+  width: 2px;
+  height: 1.05em;
+  background: var(--color-ink);
+  animation: caret-blink 1s steps(1) infinite;
+}
+.t-caret::after {
+  right: -2px;
+}
+.t-caret-before::before {
+  left: -1px;
+}
+@keyframes caret-blink {
+  50% {
+    opacity: 0;
+  }
+}

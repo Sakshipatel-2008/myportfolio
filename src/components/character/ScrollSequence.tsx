@@ -8,6 +8,7 @@ type Props = {
   frameCount: number;
   basePath: string; // e.g. "/frames"
   scrollLength?: string; // how long the pinned scroll lasts
+  framePortion?: number; // 0–1: how much of the scroll plays the frames
   onProgress?: (progress: number) => void;
   children?: ReactNode;
 };
@@ -20,6 +21,7 @@ export default function ScrollSequence({
   frameCount,
   basePath,
   scrollLength = "+=400%",
+  framePortion = 1,
   onProgress,
   children,
 }: Props) {
@@ -98,32 +100,29 @@ export default function ScrollSequence({
     if (!wrap || prefersReduced()) return;
 
     const ctx = gsap.context(() => {
-      const state = { frame: 0 };
-      gsap.to(state, {
-        frame: frameCount - 1,
-        snap: { frame: 1 },
-        ease: "none",
-        scrollTrigger: {
-          trigger: wrap,
-          start: "top top",
-          end: scrollLength,
-          scrub: 0.5,
-          pin: true,
-          onUpdate: (self) => onProgressRef.current?.(self.progress),
-        },
-        onUpdate: () => {
-          frameRef.current = state.frame;
-          draw(state.frame);
+      ScrollTrigger.create({
+        trigger: wrap,
+        start: "top top",
+        end: scrollLength,
+        pin: true,
+        onUpdate: (self) => {
+          const p = self.progress;
+          const f = Math.round(Math.min(p / framePortion, 1) * (frameCount - 1));
+          if (f !== frameRef.current) {
+            frameRef.current = f;
+            draw(f);
+          }
+          onProgressRef.current?.(p);
         },
       });
     }, wrap);
 
     return () => ctx.revert();
-  }, [frameCount, scrollLength, draw]);
+  }, [frameCount, scrollLength, framePortion, draw]);
 
   return (
     <div ref={wrapRef} className="relative h-screen w-full overflow-hidden bg-bg">
-      <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
+      <canvas ref={canvasRef} className="hero-canvas absolute inset-0 h-full w-full" />
       {children}
       {loaded < frameCount && (
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 font-mono text-xs tracking-widest text-muted">
@@ -132,5 +131,4 @@ export default function ScrollSequence({
       )}
     </div>
   );
-  <canvas ref={canvasRef} className="hero-canvas absolute inset-0 h-full w-full" />
 }
